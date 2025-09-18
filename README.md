@@ -2,7 +2,7 @@
 
 ## 安装指南
 ### 1. 安装 Redis 数据库
-bash
+```bash
 更新软件包列表
 sudo apt update
 安装 Redis 服务器
@@ -11,18 +11,21 @@ sudo apt install redis-server
 sudo service redis-server start
 检查 Redis 运行状态
 sudo systemctl status redis-server
+```
 ### 2. 创建 Python 虚拟环境
-bash
+```bash
 创建名为 chatglm 的虚拟环境 (Python 3.10)
 conda create -n chatglm python=3.10
 激活虚拟环境
 conda activate chatglm
+```
 ### 3. 安装 Python 依赖库
-bash
+```bash
 升级 pip
 pip install -U pip
 安装项目依赖
 pip install redis transfer flask bcrypt
+```
 > **注意**：`socket`, `threading` 和 `json` 是 Python 标准库，无需单独安装
 ## 运行指南
 ### 启动顺序
