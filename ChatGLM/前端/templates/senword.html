@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敏感词管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 统一主色调：蓝色系 */
+        :root {
+            --primary-color: #4a6bff;
+            --primary-dark: #1e40af;
+            --primary-light: #e6f0ff;
+            --accent-color: #ffd166;
+            --text-dark: #333;
+            --text-light: #777;
+            --bg-light: #f0f5ff;
+            --border-color: #d0e3ff;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e6e9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--accent-color);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .senword-management-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.2);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.15);
+            outline: none;
+        }
+
+        .search-btn, .add-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover, .add-btn:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+
+        .senword-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .senword-table th {
+            background: var(--primary-light);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .senword-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            color: var(--text-dark);
+        }
+
+        .senword-table tr:hover td {
+            background: #f0f5ff;
+        }
+
+        .action-btn {
+            background: #f0f5ff;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 5px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: #fff1f1;
+            color: var(--danger-color);
+        }
+
+        .action-btn.delete:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .page-btn {
+            background: #f0f5ff;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .page-btn:hover:not(.active) {
+            background: #dbe4ff;
+        }
+
+        .no-senwords {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 18px;
+        }
+
+        .no-senwords i {
+            font-size: 48px;
+            color: #e0e7ff;
+            margin-bottom: 15px;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            color: var(--primary-dark);
+        }
+
+        .close-btn {
+            font-size: 28px;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.15);
+            outline: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel, .btn-save {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+
+        /* 确认模态框 */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .confirmation-content {
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 12px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.3);
+            text-align: center;
+        }
+
+        .confirmation-title {
+            font-size: 22px;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message {
+            font-size: 16px;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-confirm, .btn-deny {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-deny {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-deny:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+
+        @media (max-width: 768px) {
+            .senword-table th, .senword-table td {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .modal-content, .confirmation-content {
+                width: 90%;
+            }
+        }
+
+        /* 提示模态框 */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .alert-content {
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 25px;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.3);
+            border: 1极简版代码px solid var(--border-color);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .alert-header h3 {
+            color: var(--primary-dark);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .close-alert {
+            font-size: 28px;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-alert:hover {
+            color: var(--primary-color);
+        }
+
+        .alert-body {
+            margin-bottom: 25px;
+        }
+
+        .alert-body p {
+            font-size: 16px;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .alert-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>敏感词管理系统</span>
+            </div>
+            <button class="back-btn" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+                返回管理
+            </button>
+        </div>
+
+        <div class="senword-management-container">
+            <h2 class="section-title">
+                <i class="fas fa-ban"></i>
+                敏感词管理
+            </h2>
+
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="搜索敏感词..." id="searchInput">
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                    搜索
+                </button>
+                <button class="search-btn" id="addSenwordBtn">
+                    <i class="fas fa-plus"></i>
+                    添加敏感词
+                </button>
+            </div>
+
+            <table class="senword-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>敏感词文本</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="senwordTableBody">
+                    <!-- 数据将通过JavaScript填充 -->
+                </tbody>
+            </table>
+
+            <div class="no-senwords" id="noSenwords" style="display: none;">
+                <i class="fas fa-ban"></i>
+                <p>没有找到敏感词</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加敏感词模态框 -->
+    <div class="modal" id="addSenwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加敏感词</h3>
+                <span class="close-btn" id="closeAddModal">&times;</span>
+            </div>
+            <form id="addSenwordForm">
+                <div class="form-group">
+                    <label for="addSenwordText">敏感词文本</label>
+                    <input type="text" id="addSenwordText" placeholder="例如：革命、钱生钱">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelAdd">取消</button>
+                    <button type="button" class="btn-save" id="confirmAdd">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 确认模态框 -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-content">
+            <h3 class="confirmation-title">确认删除</h3>
+            <p class="confirmation-message" id="confirmationMessage">确定要删除这个敏感词吗？此操作不可撤销！</p>
+            <div class="confirmation-buttons">
+                <button class="btn-deny" id="denyDelete">取消</button>
+                <button class="btn-confirm" id="confirmDelete">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示模态框 -->
+    <div class="alert-modal" id="alertModal">
+        <div class="alert-content">
+            <div class="alert-header">
+                <h3 id="alertTitle">提示</h3>
+                <span class="close-alert" id="closeAlert">&times;</span>
+            </div>
+            <div class="alert-body">
+                <p id="alertMessage"></p>
+            </div>
+            <div class="alert-footer">
+                <button class="btn-confirm" id="confirmAlert">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const addSenwordModal = document.getElementById('addSenwordModal');
+        const closeAddModalBtn = document.getElementById('closeAddModal');
+        const cancelAdd = document.getElementById('cancelAdd');
+        const confirmAdd = document.getElementById('confirmAdd');
+        const addSenwordText = document.getElementById('addSenwordText');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const addSenwordBtn = document.getElementById('addSenwordBtn');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const denyDelete = document.getElementById('denyDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+        const senwordTableBody = document.getElementById('senwordTableBody');
+        const noSenwords = document.getElementById('noSenwords');
+
+        // 提示模态框元素
+        const alertModal = document.getElementById('alertModal');
+        const alertTitle = document.getElementById('alertTitle');
+        const alertMessage = document.getElementById('alertMessage');
+        const closeAlert = document.getElementById('closeAlert');
+        const confirmAlert = document.getElementById('confirmAlert');
+
+        // 当前操作的敏感词ID
+        let currentSenwordId = null;
+
+        // 显示自定义提示
+        function showAlert(title, message) {
+            alertTitle.textContent = title;
+            alertMessage.textContent = message;
+            alertModal.style.display = 'block';
+        }
+
+        // 关闭自定义提示
+        function closeAlertModal() {
+            alertModal.style.display = 'none';
+        }
+
+        // 显示自定义Confirm
+        function showConfirm(title, message) {
+            confirmationMessage.textContent = message;
+            confirmationModal.style.display = 'block';
+        }
+
+        // 关闭确认模态框
+        function closeConfirmModal() {
+            confirmationModal.style.display = 'none';
+        }
+
+        // 打开添加模态框
+        addSenwordBtn.addEventListener('click', function() {
+            // 清空表单
+            addSenwordText.value = '';
+            addSenwordModal.style.display = 'block';
+        });
+
+        // 关闭添加模态框
+        closeAddModalBtn.addEventListener('click', closeAddModal);
+        cancelAdd.addEventListener('click', closeAddModal);
+
+        function closeAddModal() {
+            addSenwordModal.style.display = 'none';
+        }
+
+        // 添加敏感词
+        confirmAdd.addEventListener('click', function() {
+            const text = addSenwordText.value.trim();
+
+            // 验证输入
+            if (!text) {
+                showAlert('输入错误', '敏感词文本不能为空');
+                return;
+            }
+
+            // 发送添加请求
+            fetch('/api/senwords/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || '添加失败');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showAlert('添加成功', `敏感词 "${text}" 已成功添加`);
+                    closeAddModal();
+                    // 刷新敏感词列表
+                    fetchSenwords();
+                } else {
+                    throw new Error(data.message || '添加失败');
+                }
+            })
+            .catch(error => {
+                console.error('添加失败:', error);
+                showAlert('添加失败', error.message);
+            });
+        });
+
+        // 删除敏感词
+        function deleteSenword(senwordId) {
+            fetch(`/api/senwords/${senwordId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || '删除失败');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showAlert('删除成功', '敏感词已删除');
+                    // 刷新敏感词列表
+                    fetchSenwords();
+                } else {
+                    throw new Error(data.message || '删除失败');
+                }
+            })
+            .catch(error => {
+                console.error('删除失败:', error);
+                showAlert('删除失败', error.message);
+            });
+        }
+
+        // 搜索敏感词
+        searchBtn.addEventListener('click', searchSenwords);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') searchSenwords();
+        });
+
+        function searchSenwords() {
+            const searchTerm = searchInput.value.trim();
+
+            if (!searchTerm) {
+                fetchSenwords();
+                return;
+            }
+
+            fetch(`/api/senwords/search?term=${encodeURIComponent(searchTerm)}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || '搜索失败');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderSenwords(data);
+            })
+            .catch(error => {
+                console.error('搜索失败:', error);
+                showAlert('搜索失败', error.message);
+            });
+        }
+
+        // 渲染敏感词表格
+        function renderSenwords(senwords) {
+            senwordTableBody.innerHTML = '';
+
+            if (!senwords || senwords.length === 0) {
+                noSenwords.style.display = 'block';
+                return;
+            }
+
+            noSenwords.style.display = 'none';
+
+            senwords.forEach(senword => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${senword.senword_id}</td>
+                    <td>${senword.senword_text}</td>
+                    <td>
+                        <button class="action-btn delete delete-btn" data-id="${senword.senword_id}">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </td>
+                `;
+
+                senwordTableBody.appendChild(row);
+            });
+
+            // 绑定删除事件
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const senwordId = this.dataset.id;
+                    const senwordText = this.closest('tr').cells[1].textContent;
+
+                    showConfirm('确认删除', `确定要删除敏感词 "${senwordText}" 吗？此操作不可撤销！`);
+
+                    // 设置确认删除的回调
+                    confirmDelete.onclick = function() {
+                        deleteSenword(senwordId);
+                        closeConfirmModal();
+                    };
+                });
+            });
+        }
+
+        // 获取敏感词列表
+        function fetchSenwords() {
+            fetch('/api/senwords')
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || '获取数据失败');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderSenwords(data);
+            })
+            .catch(error => {
+                console.error('获取数据失败:', error);
+
+                // 检查是否是未登录错误
+                if (error.message.includes('401')) {
+                    showAlert('会话过期', '您未登录或会话已过期，请重新登录');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                }
+                // 检查是否是权限错误
+                else if (error.message.includes('403')) {
+                    showAlert('权限不足', '您没有权限执行此操作');
+                }
+                // 其他错误
+                else {
+                    showAlert('获取数据失败', error.message);
+                }
+            });
+        }
+
+        // 取消删除
+        denyDelete.addEventListener('click', closeConfirmModal);
+
+        // 绑定提示事件
+        closeAlert.addEventListener('click', closeAlertModal);
+        confirmAlert.addEventListener('click', closeAlertModal);
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取敏感词列表
+            fetchSenwords();
+        });
+    </script>
+</body>
+</html>

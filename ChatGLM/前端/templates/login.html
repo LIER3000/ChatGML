@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统登录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    /* 登录页面样式 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f0f5ff 0%, #e6e9ff 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .login-container {
+        border-radius: 15px;
+        background: white;
+        margin: 50px auto;
+        width: 450px;
+        padding: 35px 35px 25px 35px;
+        border: 1px solid #e0e7ff;
+        box-shadow: 0 5px 25px rgba(74, 107, 255, 0.2);
+    }
+
+    .login-title {
+        text-align: center;
+        color: #1e40af;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0 auto 30px auto;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .login-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+        border-radius: 2px;
+    }
+
+    .input-group {
+        margin-bottom: 25px;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 10px;
+        color: #4a6bff;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 14px 18px;
+        border: 1px solid #e0e7ff;
+        border-radius: 8px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: #f8f9ff;
+        transition: all 0.3s;
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: #4a6bff;
+        box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.15);
+    }
+
+    .checkbox-group {
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-group input {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        accent-color: #4a6bff;
+    }
+
+    .checkbox-group label {
+        color: #666;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .primary-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(74, 107, 255, 0.3);
+    }
+
+    .primary-btn:hover {
+        background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(74, 107, 255, 0.4);
+    }
+
+    .secondary-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #67c23a 0%, #3a8b00 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(103, 194, 58, 0.3);
+    }
+
+    .secondary-btn:hover {
+        background: linear-gradient(135deg, #5db032 0%, #2d7a00 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(103, 194, 58, 0.4);
+    }
+
+    .error-message {
+        color: #ff4d4f;
+        font-size: 14px;
+        margin-top: 8px;
+        font-weight: 500;
+        background: #fff2f0;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border-left: 4px solid #ff4d4f;
+    }
+
+    .success-message {
+        color: #67c23a;
+        font-size: 14px;
+        margin-top: 8px;
+        font-weight: 500;
+        background: #f0f9eb;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border-left: 4px solid #67c23a;
+    }
+
+    .flash-messages {
+        margin-bottom: 25px;
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 25px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .form-footer a {
+        color: #4a6bff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .form-footer a:hover {
+        color: #1e40af;
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-title">系统登录</div>
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == 'error' %}
+                            <div class="error-message">{{ message }}</div>
+                        {% elif category == 'success' %}
+                            <div class="success-message">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <form method="POST" action="{{ url_for('login_page') }}">
+            <div class="input-group">
+                <label for="userid">👤 账号</label>
+                <!-- 用户名输入框 -->
+                <input type="text" id="userid" name="userid" class="input-field" placeholder="账号"
+                       value="{{ userid if userid else '1' }}">
+            </div>
+
+            <div class="input-group">
+                <label for="password">🔒 密码</label>
+                <!-- 密码输入框 -->
+                <input type="password" id="password" name="password" class="input-field" placeholder="密码"
+                       value="{{ password if password else 'p@ssw0rd1' }}">
+            </div>
+
+            <button type="submit" class="primary-btn">登录</button>
+        </form>
+
+        <a href="{{ url_for('register_page') }}">
+            <button class="secondary-btn">注册新账号</button>
+        </a>
+    </div>
+</body>
+</html>

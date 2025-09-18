@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f5ff 0%, #e6e9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: #ffd166;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .user-management-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.2);
+            padding: 30px;
+            border: 1px solid #e0e7ff;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #1e40af;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e6e9ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #4a6bff;
+        }
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .search-input:focus {
+            border-color: #4a6bff;
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.15);
+            outline: none;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .user-table th {
+            background: #e6f0ff;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e40af;
+            border-bottom: 2px solid #d0e3ff;
+        }
+
+        .user-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            color: #555;
+        }
+
+        .user-table tr:hover td {
+            background: #f0f5ff;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #d63031;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .role-user {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #1e40af;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .action-btn {
+            background: #f0f5ff;
+            color: #4a6bff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 5px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            background: #4a6bff;
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: #fff1f1;
+            color: #ff6b6b;
+        }
+
+        .action-btn.delete:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .page-btn {
+            background: #f0f5ff;
+            color: #4a6bff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn.active {
+            background: #4a6bff;
+            color: white;
+        }
+
+        .page-btn:hover:not(.active) {
+            background: #dbe4ff;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 18px;
+        }
+
+        .no-users i {
+            font-size: 48px;
+            color: #e0e7ff;
+            margin-bottom: 15px;
+        }
+
+        /* 编辑用户模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            color: #1e40af;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #4a6bff;
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.15);
+            outline: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel, .btn-save {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+
+        /* 确认模态框 */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .confirmation-content {
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 12px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 5px 25px rgba(74, 107, 255, 0.3);
+            text-align: center;
+        }
+
+        .confirmation-title {
+            font-size: 22px;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-confirm, .btn-deny {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-deny {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-deny:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+        }
+
+        @media (max-width: 768px) {
+            .user-table th, .user-table td {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .modal-content, .confirmation-content {
+                width: 90%;
+            }
+        }
+
+    .alert-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .alert-content {
+        background-color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 25px;
+        border-radius: 12px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 5px 25px rgba(74, 107, 255, 0.3);
+        border: 1px solid #e0e7ff;
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e6e9ff;
+    }
+
+    .alert-header h3 {
+        color: #1e40af;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .close-alert {
+        font-size: 28px;
+        color: #888;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-alert:hover {
+        color: #4a6bff;
+    }
+
+    .alert-body {
+        margin-bottom: 25px;
+    }
+
+    .alert-body p {
+        font-size: 16px;
+        color: #555;
+        line-height: 1.5;
+    }
+
+    .alert-footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, #4a6bff 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        font-size: 16px;
+    }
+
+    .btn-confirm:hover {
+        background: linear-gradient(135deg, #3a5bef 0%, #0d2e9e 100%);
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-users-cog"></i>
+                <span>用户管理系统</span>
+            </div>
+            <button class="back-btn" onclick="window.location.href='/manager'">
+                <i class="fas fa-arrow-left"></i>
+                返回管理
+            </button>
+        </div>
+
+        <div class="user-management-container">
+            <h2 class="section-title">
+                <i class="fas fa-user-friends"></i>
+                用户管理
+            </h2>
+
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="搜索用户..." id="searchInput">
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                    搜索
+                </button>
+            </div>
+
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>用户ID</th>
+                        <th>用户信息</th>
+                        <th>角色</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- 初始为空，由JavaScript填充 -->
+                </tbody>
+            </table>
+
+            {% if not users %}
+            <div class="no-users">
+                <i class="fas fa-user-slash"></i>
+                <p>没有找到用户</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 编辑用户模态框 -->
+    <div class="modal" id="editUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑用户</h3>
+                <span class="close-btn" id="closeModal">&times;</span>
+            </div>
+            <form id="editUserForm">
+                <div class="form-group">
+                    <label for="editUserId">用户名</label>
+                    <input type="text" id="editUserId" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editUsername">昵称</label>
+                    <input type="text" id="editUsername">
+                </div>
+                <div class="form-group">
+                    <label for="editRole">角色</label>
+                    <select id="editRole">
+                        <option value="0">普通用户</option>
+                        <option value="1">管理员</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelEdit">取消</button>
+                    <button type="button" class="btn-save" id="saveUser">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 通用确认模态框 -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-content">
+            <h3 class="confirmation-title" id="confirmationTitle"></h3>
+            <p class="confirmation-message" id="confirmationMessage"></p>
+            <div class="confirmation-buttons">
+                <button class="btn-deny" id="denyAction">取消</button>
+                <button class="btn-confirm" id="confirmAction">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 在HTML中添加自定义提示模态框 -->
+<div class="alert-modal" id="alertModal">
+    <div class="alert-content">
+        <div class="alert-header">
+            <h3 id="alertTitle">提示</h3>
+            <span class="close-alert" id="closeAlert">&times;</span>
+        </div>
+        <div class="alert-body">
+            <p id="alertMessage"></p>
+        </div>
+        <div class="alert-footer">
+            <button class="btn-confirm" id="confirmAlert">确定</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 在页面加载完成后调用refreshUserList
+    document.addEventListener('DOMContentLoaded', function() {
+        // 首次加载用户列表
+        refreshUserList();
+    });
+    // DOM元素
+    const editButtons = document.querySelectorAll('.edit-btn');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const editUserModal = document.getElementById('editUserModal');
+    const closeModal = document.getElementById('closeModal');
+    const cancelEdit = document.getElementById('cancelEdit');
+    const saveUser = document.getElementById('saveUser');
+    const editUserId = document.getElementById('editUserId');
+    const editUsername = document.getElementById('editUsername');
+    const editRole = document.getElementById('editRole');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const userTableBody = document.getElementById('userTableBody');
+
+    // 自定义提示模态框元素
+    const alertModal = document.getElementById('alertModal');
+    const alertTitle = document.getElementById('alertTitle');
+    const alertMessage = document.getElementById('alertMessage');
+    const closeAlert = document.getElementById('closeAlert');
+    const confirmAlert = document.getElementById('confirmAlert');
+
+    // 当前编辑的用户ID
+    let currentEditUserId = null;
+    let currentEditUserRole = null;
+    const currentUserId = "{{ session.user_id }}";
+
+    // 显示自定义提示
+    function showAlert(title, message) {
+        alertTitle.textContent = title;
+        alertMessage.textContent = message;
+        alertModal.style.display = 'block';
+    }
+
+    // 关闭自定义提示
+    function closeAlertModal() {
+        alertModal.style.display = 'none';
+    }
+
+    // 显示自定义Confirm
+    function showConfirm(type, title, message) {
+        return new Promise(resolve => {
+            // 设置标题和消息
+            const titleElement = document.getElementById('confirmationTitle');
+            const messageElement = document.getElementById('confirmationMessage');
+
+            if (titleElement && messageElement) {
+                titleElement.textContent = title;
+                messageElement.textContent = message;
+            } else {
+                console.error('无法找到确认对话框元素');
+                resolve(false);
+                return;
+            }
+
+            // 根据类型设置按钮文本
+            const confirmButton = document.getElementById('confirmAction');
+            const denyButton = document.getElementById('denyAction');
+
+            if (type === 'delete') {
+                if (confirmButton) confirmButton.textContent = '确认删除';
+                if (denyButton) denyButton.textContent = '取消删除';
+            } else if (type === 'promote') {
+                if (confirmButton) confirmButton.textContent = '确认授权';
+                if (denyButton) denyButton.textContent = '取消授权';
+            } else {
+                if (confirmButton) confirmButton.textContent = '确认';
+                if (denyButton) denyButton.textContent = '取消';
+            }
+
+            // 显示模态框
+            document.getElementById('confirmationModal').style.display = 'block';
+
+            // 创建一次性事件处理器
+            const confirmHandler = () => {
+                removeEventListeners();
+                closeConfirmModal();
+                resolve(true);
+            };
+
+            const cancelHandler = () => {
+                removeEventListeners();
+                closeConfirmModal();
+                resolve(false);
+            };
+
+            // 移除之前的事件监听器（如果存在）
+            confirmButton.removeEventListener('click', confirmHandler);
+            denyButton.removeEventListener('click', cancelHandler);
+
+            // 绑定新的事件
+            confirmButton.addEventListener('click', confirmHandler);
+            denyButton.addEventListener('click', cancelHandler);
+
+            // 移除事件监听器的函数
+            function removeEventListeners() {
+                confirmButton.removeEventListener('click', confirmHandler);
+                denyButton.removeEventListener('click', cancelHandler);
+            }
+        });
+    }
+
+    // 修改取消按钮事件处理
+    document.getElementById('denyAction').addEventListener('click', function() {
+        closeConfirmModal();
+    });
+
+    // 关闭确认模态框
+    function closeConfirmModal() {
+        document.getElementById('confirmationModal').style.display = 'none';
+    }
+
+    // 绑定自定义提示事件
+    closeAlert.addEventListener('click', closeAlertModal);
+    confirmAlert.addEventListener('click', closeAlertModal);
+
+    // 打开编辑模态框
+    editButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const userId = this.dataset.id;
+        const userRow = this.closest('tr');
+
+        // 获取用户名元素 - 正确的选择器
+        const usernameElement = userRow.cells[1].querySelector('div > div:last-child > div:first-child');
+
+        const userData = {
+            id: userId,
+            username: usernameElement.textContent, // 完整的用户名
+            role: userRow.cells[2].querySelector('span').classList.contains('role-admin') ? '1' : '0'
+        };
+
+        currentEditUserId = userId;
+        currentEditUserRole = userData.role;
+
+        // 填充表单
+        editUserId.value = userData.id;
+        editUsername.value = userData.username; // 现在显示完整用户名
+        editRole.value = userData.role;
+
+        editUserModal.style.display = 'block';
+    });
+});
+
+    // 修复后的删除按钮逻辑
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.id;
+            const userRow = this.closest('tr');
+
+            // 确保正确获取用户名
+            const usernameElement = userRow.cells[1].querySelector('div > div:first-child');
+            if (!usernameElement) {
+                console.error('无法找到用户名元素');
+                return;
+            }
+            const username = usernameElement.textContent;
+
+            // 确保正确获取角色信息
+            const roleElement = userRow.cells[2].querySelector('span');
+            if (!roleElement) {
+                console.error('无法找到角色元素');
+                return;
+            }
+            const isAdmin = roleElement.classList.contains('role-admin');
+
+            // 1. 检查是否尝试删除管理员
+            if (isAdmin) {
+                showAlert('操作禁止', '管理员账户无法删除');
+                return;
+            }
+
+            // 2. 检查是否尝试删除自己
+            if (userId === currentUserId) {
+                showAlert('操作禁止', '不能删除自己的账户');
+                return;
+            }
+
+            // 3. 删除普通用户需要确认
+            showConfirm('delete', '确认删除', `确定要删除用户 "${username}" 吗？此操作不可撤销！`)
+                .then(result => {
+                    if (result) {
+                        deleteUser(userId);
+                    }
+                })
+                .catch(error => {
+                    console.error('确认对话框错误:', error);
+                    showAlert('错误', '无法显示确认对话框');
+                });
+        });
+    });
+
+    // 关闭编辑模态框
+    closeModal.addEventListener('click', closeEditModal);
+    cancelEdit.addEventListener('click', closeEditModal);
+
+    function closeEditModal() {
+        editUserModal.style.display = 'none';
+        currentEditUserId = null;
+        currentEditUserRole = null;
+    }
+
+    // 保存用户更改
+    saveUser.addEventListener('click', function() {
+        const userId = editUserId.value;
+        const username = editUsername.value;
+        const role = editRole.value;
+
+        // 验证输入
+        if (!username) {
+            showAlert('输入错误', '昵称不能为空');
+            return;
+        }
+
+        // 检查是否尝试将管理员降级为普通用户
+        if (currentEditUserRole === '1' && role === '0') {
+            showAlert('操作禁止', '不能将管理员降级为普通用户');
+            return;
+        }
+
+        // 检查是否尝试将普通用户提升为管理员
+        if (currentEditUserRole === '0' && role === '1') {
+            const userid = editUserId.value;
+
+            // 使用修改后的showConfirm函数
+            showConfirm('promote', '管理员授权确认', `确定要将用户 "${userid}" 提升为管理员吗？此操作将授予该用户管理权限！`)
+                .then(result => {
+                    if (result) {
+                        // 用户确认授权，执行授权操作
+                        confirmPromotionAction(userId);
+                    }
+                })
+                .catch(error => {
+                    console.error('授权确认错误:', error);
+                });
+            return;
+        }
+
+        // 更新用户信息
+        updateUser(userId, username, role);
+    });
+
+    function refreshUserList() {
+        fetch('/api/users')
+        .then(response => {
+            // 首先检查响应状态
+            if (!response.ok) {
+                // 如果响应不是 200-299，尝试获取错误信息
+                return response.text().then(text => {
+                    throw new Error(`服务器错误: ${response.status} ${response.statusText}\n${text}`);
+                });
+            }
+
+            // 检查内容类型是否为 JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                return response.text().then(text => {
+                    throw new Error(`无效的响应类型: ${contentType}\n响应内容: ${text}`);
+                });
+            }
+
+            return response.json();
+        })
+        .then(users => {
+            // 清空表格
+            userTableBody.innerHTML = '';
+
+            // 重新填充表格
+            for (const [userId, user] of Object.entries(users)) {
+                const row = document.createElement('tr');
+
+                // 创建用户头像
+                const avatar = document.createElement('div');
+                avatar.className = 'user-avatar';
+                avatar.textContent = user.user_name.charAt(0).toUpperCase();
+
+                // 创建角色标签
+                const roleBadge = document.createElement('span');
+                roleBadge.className = user.user_identity === 1 ? 'role-admin' : 'role-user';
+                roleBadge.textContent = user.user_identity === 1 ? '管理员' : '普通用户';
+
+                // 格式化时间
+                let formattedTime = user.user_time;
+                if (typeof user.user_time === 'string') {
+                    // 尝试解析时间字符串
+                    const dateObj = new Date(user.user_time);
+                    if (!isNaN(dateObj)) {
+                        formattedTime = formatDateTime(dateObj);
+                    }
+                } else if (user.user_time instanceof Date) {
+                    formattedTime = formatDateTime(user.user_time);
+                }
+
+                row.innerHTML = `
+                    <td>${userId}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            ${avatar.outerHTML}
+                            <div>
+                                <div style="font-weight: 500;">${user.user_name}</div>
+                                <div style="font-size: 14px; color: #777;">${user.user_id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${roleBadge.outerHTML}</td>
+                    <td>${formattedTime}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-id="${userId}">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="action-btn delete delete-btn" data-id="${userId}">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </td>
+                `;
+
+                userTableBody.appendChild(row);
+            }
+
+            // 重新绑定事件
+            bindEditEvents();
+            bindDeleteEvents();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            // 检查是否是未登录错误
+            if (error.message.includes('401')) {
+                showAlert('会话过期', '您未登录或会话已过期，请重新登录');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            }
+            // 检查是否是权限错误
+            else if (error.message.includes('403')) {
+                showAlert('权限不足', '您没有权限执行此操作');
+            }
+            // 其他错误
+            else {
+                showAlert('获取数据失败', error.message);
+            }
+        });
+    }
+
+    // 添加时间格式化函数
+    function formatDateTime(date) {
+        // 确保传入的是Date对象
+        if (!(date instanceof Date)) {
+            try {
+                date = new Date(date);
+            } catch (e) {
+                // 如果无法转换，返回当前时间
+                date = new Date();
+            }
+        }
+
+        // 格式化日期和时间
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+
+    // 绑定编辑事件
+    function bindEditEvents() {
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userId = this.dataset.id;
+                const userRow = this.closest('tr');
+                const userData = {
+                    id: userId,
+                    username: userRow.cells[1].querySelector('div > div:last-child > div:first-child').textContent,
+                    role: userRow.cells[2].querySelector('span').classList.contains('role-admin') ? '1' : '0'
+                };
+
+                currentEditUserId = userId;
+                currentEditUserRole = userData.role;
+
+                // 填充表单
+                editUserId.value = userData.id;
+                editUsername.value = userData.username;
+                editRole.value = userData.role;
+
+                editUserModal.style.display = 'block';
+            });
+        });
+    }
+
+    // 确认管理员授权函数
+    function confirmPromotionAction(userId) {
+        // 发送授权确认请求
+        fetch(`/api/users/${userId}/confirm_promotion`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 关闭确认模态框
+                closeConfirmModal();
+                // 关闭编辑模态框
+                closeEditModal();
+                // 刷新用户列表
+                refreshUserList();
+            } else {
+                showAlert('授权失败', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('授权失败', '请稍后再试');
+        });
+    }
+
+    // 更新用户信息
+    function updateUser(userId, username, role) {
+        fetch(`/api/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                role: role
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 关闭编辑模态框
+                closeEditModal();
+                // 刷新用户列表
+                refreshUserList();
+            }
+            else {
+                showAlert('更新失败', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('更新失败', '请稍后再试');
+        });
+    }
+
+
+    // 绑定删除事件（修复版本）
+    function bindDeleteEvents() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userId = this.dataset.id;
+                const userRow = this.closest('tr');
+
+                // 确保正确获取用户名
+                const usernameElement = userRow.cells[1].querySelector('div > div:first-child');
+                if (!usernameElement) {
+                    console.error('无法找到用户名元素');
+                    return;
+                }
+                const username = usernameElement.textContent;
+
+                // 确保正确获取角色信息
+                const roleElement = userRow.cells[2].querySelector('span');
+                if (!roleElement) {
+                    console.error('无法找到角色元素');
+                    return;
+                }
+                const isAdmin = roleElement.classList.contains('role-admin');
+
+                // 1. 检查是否尝试删除管理员
+                if (isAdmin) {
+                    showAlert('操作禁止', '管理员账户无法删除');
+                    return;
+                }
+
+                // 2. 检查是否尝试删除自己
+                if (userId === currentUserId) {
+                    showAlert('操作禁止', '不能删除自己的账户');
+                    return;
+                }
+
+                // 3. 删除普通用户需要确认
+                showConfirm('delete', '确认删除', `确定要删除用户 "${username}" 吗？此操作不可撤销！`)
+                    .then(result => {
+                        if (result) {
+                            deleteUser(userId);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('确认对话框错误:', error);
+                        showAlert('错误', '无法显示确认对话框');
+                    });
+            });
+        });
+    }
+
+    // 删除用户函数
+    function deleteUser(userId) {
+    // 发送删除请求
+    fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                // 创建自定义错误对象
+                const error = new Error(data.error || '删除失败');
+                // 添加额外信息
+                error.response = response;
+                error.data = data;
+                throw error;
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // 成功提示（用户可见）
+            showAlert('删除成功', `用户已成功删除`);
+
+            // 控制台日志（开发人员可见）
+            console.log(`用户 ${userId} 删除成功`, {
+                timestamp: new Date().toISOString(),
+                userId: userId,
+                response: data
+            });
+
+            // 刷新用户列表
+            refreshUserList();
+        } else {
+            // 创建自定义错误对象
+            const error = new Error(data.message || '删除失败');
+            error.data = data;
+            throw error;
+        }
+    })
+    .catch(error => {
+        // 错误提示（用户可见）
+        showAlert('删除失败', error.message);
+
+        // 控制台错误日志（开发人员可见）
+        console.error(`删除用户 ${userId} 失败:`, {
+            timestamp: new Date().toISOString(),
+            error: error,
+            response: error.response,
+            data: error.data
+        });
+    });
+}
+
+    // 搜索用户（修复版本）
+    function searchUsers() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.user-table tbody tr');
+
+        if (searchTerm === '') {
+            // 搜索词为空，显示所有行
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+            return;
+        }
+
+        rows.forEach(row => {
+            // 获取用户ID
+            const userId = row.cells[0].textContent.toLowerCase();
+
+            // 获取用户名 - 需要从嵌套结构中提取
+            const usernameDiv = row.cells[1].querySelector('div > div > div:first-child');
+            const username = usernameDiv ? usernameDiv.textContent.toLowerCase() : '';
+
+            if (userId.includes(searchTerm) || username.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // 修复搜索按钮绑定问题
+    searchBtn.addEventListener('click', function() {
+        searchUsers();
+    });
+
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            searchUsers();
+        }
+    });
+</script>
+</body>
+</html>
